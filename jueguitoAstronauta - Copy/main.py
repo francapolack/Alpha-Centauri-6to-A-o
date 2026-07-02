@@ -8,7 +8,7 @@ def aplicar_filtro_oscuro(superficie, opacidad_personaje):
         return None
     img_oscura = superficie.copy()
     filtro = pygame.Surface(img_oscura.get_size(), pygame.SRCALPHA)
-    filtro.fill((0, 0, 0, 120)) # Capa negra semitransparente
+    filtro.fill((0, 0, 0, 120))
     img_oscura.blit(filtro, (0, 0), special_flags=pygame.BLEND_RGBA_SUB)
     img_oscura.set_alpha(opacidad_personaje)
     return img_oscura
@@ -17,7 +17,6 @@ def main():
     pygame.init()
     pygame.mixer.init()
 
-    # 1. CONFIGURACIÓN DE LA VENTANA
     ANCHO_BASE = 800
     ALTO_BASE = 600
     screen = pygame.display.set_mode((ANCHO_BASE, ALTO_BASE), pygame.RESIZABLE)
@@ -26,7 +25,6 @@ def main():
     clock = pygame.time.Clock()
     carpeta_actual = os.path.dirname(__file__)
 
-    # 2. AUDIO (Música y Efectos)
     ruta_musica = os.path.join(carpeta_actual, "musica_menu.mp3")
     if os.path.exists(ruta_musica):
         pygame.mixer.music.load(ruta_musica)
@@ -36,7 +34,6 @@ def main():
     ruta_click = os.path.join(carpeta_actual, "click.wav")
     sonio_click = pygame.mixer.Sound(ruta_click) if os.path.exists(ruta_click) else None
 
-    # 3. CARGA DE ASSETS GRÁFICOS (Rutas relativas seguras)
     assets = {}
     nombres_archivos = {
         "fondointro": "fondointro.png",
@@ -55,27 +52,27 @@ def main():
         else:
             assets[clave] = None
 
-    # Variables de control de estado del juego
     estado_actual = "menu"
     fase_narrativa = 1  
     opacidad_astronauta = 0
     opacidad_rene = 0   
     nombre_jugador = ""
     
-    # Textos de la cinemática
+  
     texto_prologo = "Año 2142. Sector Alpha Centauri... Los sistemas fallan y la cabina se despresuriza."
-    texto_rene = "René: ¡Amigo! Qué bueno que se adaptó la cabina. Reporto fallas graves en las comunicaciones externas."
+    texto_rene = "René: ¡Amigo! Qué bueno que se adaptó la cabina. "
+    #Reporto fallas graves en las comunicaciones externas."
     caracteres_vistos = 0
     conteo_frames = 0
 
-    # Rectángulo interactivo del botón final de la demo
+  
     boton_demo_rect = pygame.Rect(0, 0, 0, 0)
 
     while True:
         W_ACTUAL, H_ACTUAL = screen.get_size()
         pos_mouse = pygame.mouse.get_pos()
         
-        # --- MANEJO DE EVENTOS ---
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -87,13 +84,12 @@ def main():
                     sys.exit()
                 
                 if estado_actual == "cinematica":
-                    # Fase 1: Prólogo inicial
+
                     if fase_narrativa == 1:
                         if event.key in [pygame.K_RETURN, pygame.K_SPACE]:
                             if sonio_click: sonio_click.play()
                             fase_narrativa = 2
                     
-                    # Fase 2: Input para escribir el nombre
                     elif fase_narrativa == 2:
                         if event.key == pygame.K_BACKSPACE:
                             nombre_jugador = nombre_jugador[:-1]
@@ -106,7 +102,7 @@ def main():
                             nombre_jugador += event.unicode
                             if sonio_click: sonio_click.play()
                             
-                    # Fase 3: Texto de introducción del Jugador
+
                     elif fase_narrativa == 3:
                         if event.key in [pygame.K_RETURN, pygame.K_SPACE]:
                             if sonio_click: sonio_click.play()
@@ -114,7 +110,7 @@ def main():
                             caracteres_vistos = 0
                             conteo_frames = 0
 
-            # Clicks del Mouse
+
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if estado_actual == "menu":
                     if assets["jugar"] and jugar_rect.collidepoint(pos_mouse):
@@ -130,22 +126,16 @@ def main():
                 elif estado_actual == "cinematica" and fase_narrativa == 4:
                     if caracteres_vistos == len(texto_rene) and boton_demo_rect.collidepoint(pos_mouse):
                         if sonio_click: sonio_click.play()
-                        
-                        # =======================================================
-                        # 💥 ACÁ TU COMPAÑERA DEBE ENLAZAR SU CÓDIGO DE NIVEL 💥
-                        # =======================================================
+
                         print("¡Conexión exitosa! Iniciando el nivel de la demo...")
                         import nivel1
                         nivel1.main_looop()
-                        # Ejemplo de llamada:
-                        # import nivel1
-                        # nivel1.iniciar_nivel(screen)
-                        # =======================================================
 
-        # --- DIBUJADO DE LA PANTALLA ---
+
+
         screen.fill((10, 10, 15))
 
-        # --- ESTADO: MENÚ PRINCIPAL ---
+
         if estado_actual == "menu":
             if assets["fondomenu"]:
                 fondo_m = pygame.transform.smoothscale(assets["fondomenu"], (W_ACTUAL, H_ACTUAL))
@@ -158,7 +148,7 @@ def main():
                 titulo_rect = titulo_render.get_rect(center=(int(W_ACTUAL * 0.22), int(H_ACTUAL * 0.21)))
                 screen.blit(titulo_render, titulo_rect)
 
-            # Botón Jugar
+
             if assets["jugar"]:
                 anc_b = int(W_ACTUAL * 0.33)
                 alt_b = int(assets["jugar"].get_height() * (anc_b / assets["jugar"].get_width()))
@@ -171,7 +161,7 @@ def main():
                     jugar_n = pygame.transform.smoothscale(assets["jugar"], (anc_b, alt_b))
                     screen.blit(jugar_n, jugar_rect)
 
-            # Botón Salir
+
             if assets["salir"]:
                 anc_s = int(W_ACTUAL * 0.17)
                 alt_s = int(assets["salir"].get_height() * (anc_s / assets["salir"].get_width()))
@@ -184,7 +174,7 @@ def main():
                     salir_n = pygame.transform.smoothscale(assets["salir"], (anc_s, alt_s))
                     screen.blit(salir_n, salir_rect)
 
-        # --- ESTADO: CINEMÁTICA ---
+
         elif estado_actual == "cinematica":
             if assets["fondointro"]:
                 fondo_intro = pygame.transform.smoothscale(assets["fondointro"], (W_ACTUAL, H_ACTUAL))
@@ -194,12 +184,11 @@ def main():
                 screen.blit(fondo_intro, (0, 0))
                 screen.blit(capa_oscura, (0, 0))
             
-            # Fuentes de texto
+  
             fuente_dialogo = pygame.font.SysFont("Consolas", 21, bold=True)
             fuente_sistema = pygame.font.SysFont("Consolas", 15)
             fuente_nombre_tag = pygame.font.SysFont("Arial", 22, bold=True)
 
-            # Dibujar Astronauta principal (Se oscurece en Fase 4 porque habla René)
             if assets["astronauta"]:
                 if opacidad_astronauta < 255: opacidad_astronauta += 3
                 if fase_narrativa == 4:
@@ -214,7 +203,6 @@ def main():
                 astro_rect = astro_scaled.get_rect(bottomleft=(W_ACTUAL * -0.15, H_ACTUAL - int(H_ACTUAL * 0.15)))
                 screen.blit(astro_scaled, astro_rect)
 
-            # Dibujar a René (Aparece únicamente en la Fase 4)
             if fase_narrativa == 4 and assets["rene"]:
                 if opacidad_rene < 255: opacidad_rene += 4
                 rene_base = assets["rene"].copy()
@@ -226,7 +214,6 @@ def main():
                 rene_rect = rene_scaled.get_rect(bottomright=(W_ACTUAL * 1.00, H_ACTUAL - int(H_ACTUAL * 0.15)))
                 screen.blit(rene_scaled, rene_rect)
 
-            # Estructura de la Caja de Diálogos
             ancho_caja = int(W_ACTUAL * 0.90)
             alto_caja = int(H_ACTUAL * 0.22)
             caja_rect = pygame.Rect(0, 0, ancho_caja, alto_caja)
@@ -235,7 +222,6 @@ def main():
             pygame.draw.rect(screen, (20, 20, 35), caja_rect, border_radius=8)
             pygame.draw.rect(screen, (0, 200, 220), caja_rect, width=3, border_radius=8)
 
-            # Lógica secuencial de textos
             if fase_narrativa == 1:
                 conteo_frames += 1
                 if conteo_frames % 3 == 0 and caracteres_vistos < len(texto_prologo):
@@ -265,8 +251,7 @@ def main():
                 texto_actual = texto_contexto[:caracteres_vistos]
                 render_txt = fuente_dialogo.render(texto_actual, True, (240, 240, 255))
                 screen.blit(render_txt, (caja_rect.x + 25, caja_rect.y + 35))
-                
-                # Tag de nombre del jugador (Brillante porque habla él)
+
                 tag_nombre = fuente_nombre_tag.render(nombre_jugador, True, (255, 230, 100))
                 tag_rect = tag_nombre.get_rect(centerx=astro_rect.centerx, bottom=astro_rect.top + 45)
                 screen.blit(tag_nombre, tag_rect)
@@ -283,25 +268,24 @@ def main():
                 render_txt = fuente_dialogo.render(texto_actual, True, (240, 240, 255))
                 screen.blit(render_txt, (caja_rect.x + 25, caja_rect.y + 35))
                 
-                # Tag del jugador opaco
+
                 tag_nombre = fuente_nombre_tag.render(nombre_jugador, True, (130, 120, 70))
                 tag_rect = tag_nombre.get_rect(centerx=astro_rect.centerx, bottom=astro_rect.top + 45)
                 screen.blit(tag_nombre, tag_rect)
 
-                # Tag de René brillante
                 if assets["rene"]:
                     tag_rene = fuente_nombre_tag.render("RENÉ", True, (0, 200, 255))
                     tag_rene_rect = tag_rene.get_rect(centerx=rene_rect.centerx, bottom=rene_rect.top - 45)
                     screen.blit(tag_rene, tag_rene_rect)
 
-                # DIBUJAR BOTÓN INTERACTIVO "INICIAR DEMO"
+
                 if caracteres_vistos == len(texto_rene):
                     ancho_btn = 180
                     alto_btn = 40
                     boton_demo_rect = pygame.Rect(0, 0, ancho_btn, alto_btn)
                     boton_demo_rect.bottomright = (caja_rect.right - 25, caja_rect.bottom - 20)
                     
-                    # Efecto visual al pasar el mouse por encima
+
                     color_btn = (0, 230, 150) if boton_demo_rect.collidepoint(pos_mouse) else (0, 160, 100)
                     pygame.draw.rect(screen, color_btn, boton_demo_rect, border_radius=5)
                     
