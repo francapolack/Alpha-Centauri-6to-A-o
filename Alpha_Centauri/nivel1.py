@@ -28,9 +28,9 @@ mundo=pymunk.Space()
 mundo.gravity=(0,gravedad)
 
 #jugador
-jugador_textura=pygame.image.load("Alpha-Centauri-6to-A-o\Alpha_Centauri\imagenes\camina adelante.png")
+jugador_textura=pygame.image.load("Alpha-Centauri-6to-A-o\Alpha_Centauri\imagenes\camina_adelante.png")
 jugador_rect=jugador_textura.get_rect()
-jugador_rect.center=(ANCHO_PC//2,ALTO_PC//2)
+jugador_rect.center=(ANCHO_PC+,ALTO_PC//2)
 
 
 #cosas que no son el jugador
@@ -46,7 +46,7 @@ texto_perrito="Woof(Bienvenido a Marte)"
 
 
 
-bg=pygame.image.load("Alpha-Centauri-6to-A-o\Alpha_Centauri\imagenes\fondos\laboratorio.png")
+bg=pygame.image.load(r"C:\Users\frmuu\OneDrive\Documentos\colegio(tareas o ejercicios)\alpha_centauri_toledo\Alpha-Centauri-6to-A-o\Alpha_Centauri\imagenes\fondos\laboratorio.png")
 bg_rect=bg.get_rect()
 
 
@@ -75,12 +75,7 @@ class main_looop:
         elif tecla[pygame.K_DOWN] or tecla[pygame.K_s]:
             jugador_rect.move_ip(0,JUGADOR_VELOCIDAD)
 
-        if jugador_rect.colliderect(enemigo_1_rect):
-            if not condicion_completa:
-                print("Tienes que completar x condicion antes de luchar contra el alien!")
-            else:
-                print("Hola!")
-        elif jugador_rect.colliderect(enemigo_2_rect):
+        if jugador_rect.colliderect(enemigo_2_rect):
                 print("Woof")
                 
 
