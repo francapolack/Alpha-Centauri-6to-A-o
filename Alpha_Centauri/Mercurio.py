@@ -17,10 +17,10 @@ GRAVEDAD=1000
 SELECCIONADOS=[]
 
 #COLORES
-NEGRO=0,0,0
-BLANCO=255,255,255
+NEGRO=(0,0,0)
+BLANCO=(255,255,255)
 
-#DEFINICION DE PANTALLA Y BASE PARA EL JUEGO
+#DEFINICION DE PANTALLA Y BASES PARA EL JUEGO
 pantalla=pygame.display.set_mode((0,0),pygame.FULLSCREEN)
 pygame.display.set_caption("Mercurio")
 fps=pygame.time.Clock()
@@ -28,39 +28,45 @@ fisica=pymunk.Space()
 fisica.gravity=(0,GRAVEDAD)
 fondo=pygame.image.load("Alpha-Centauri-6to-A-o/Alpha_Centauri/imagenes/fondos/laboratorio.png")
 fondo_rect=fondo.get_rect()
+musica_mercurio="Alpha-Centauri-6to-A-o/Alpha_Centauri/musica_menu.wav"
+
+pygame.mixer.music.load(musica_mercurio)
+pygame.mixer.music.set_volume(1.0)
+pygame.mixer.music.play()
+            
 
 #DEFINICION DE CLASES,FUNCIONES Y OBJETOS 
 ANCHO_PC,ALTO_PC=pygame.display.get_surface().get_size()
-def texto_display(texto,fuente,color):
-    x=ANCHO_PC//2
-    y=ALTO_PC-int(ALTO_PC*0.14)
+
+def texto_display(texto,color):
+    x=(ANCHO_PC//2)
+    y=(ALTO_PC-int(ALTO_PC*0.14))
 
     ancho_caja=int(ANCHO_PC*0.90)
     alto_caja=int(ALTO_PC*0.22)
     caja_rect=pygame.Rect(0,0,ancho_caja,alto_caja)
-
     caja_rect.center = (x,y)
+
     pygame.draw.rect(pantalla, (20, 20, 35), caja_rect, border_radius=8)
     pygame.draw.rect(pantalla, (0, 200, 220), caja_rect, width=3, border_radius=8)
 
-    txt=fuente.render(texto,True,color,)
-    pantalla.blit(txt,(x,y))
+    txt=FUENTE_DIALOGOS.render(texto,True,color)
+    pantalla.blit(txt,(caja_rect.x+25,caja_rect.y+35))
 
-
+""""
 class Jugador:
     def __init__(self,textura):
         self.textura_inicial=textura
         self.textura=pygame.transform.scale(self.textura_inicial,(150,50))
         self.hitbox=self.textura.get_rect()
         self.hitbox.center=(ANCHO_PC//2,ALTO_PC//2)
-
+"""
 
 class Partes_Rover:
     #poner esto como una libreria?
     click=False 
     def __init__(self,textura,x):
-        self.textura_inicial=textura
-        self.textura=pygame.transform.scale(self.textura_inicial,(150,50))
+        self.textura=textura
         self.hitbox=self.textura.get_rect()
         self.hitbox.center=(x,(ALTO_PC//4))
     def descripcion(self,texto):
@@ -89,15 +95,17 @@ rueda=Partes_Rover(textura_rueda,(ANCHO_PC//2))
 rueda.descripcion("Texto de la rueda, bla bla blaaa")
 
 textura_camara=pygame.image.load("Alpha-Centauri-6to-A-o/Alpha_Centauri/imagenes/objetos/mercurio/ROVER_CAMARAS.png").convert_alpha()
-camara=Partes_Rover(textura_camara,(ANCHO_PC//4))
+camara=Partes_Rover(textura_camara,(ANCHO_PC//6))
 camara.descripcion("Texto de la camata, bla bla blaa")
 
 textura_base=pygame.image.load("Alpha-Centauri-6to-A-o/Alpha_Centauri/imagenes/objetos/mercurio/ROVER_BASE.png").convert_alpha()
-base=Partes_Rover(textura_base,(ANCHO_PC//6))
+base=Partes_Rover(textura_base,(ANCHO_PC//8))
 base.descripcion("Texto de la base,bla bla blaa")
 
 class Main:
     while RUNNING:
+
+        
         for event in pygame.event.get():
             if event.type==pygame.QUIT:
                 RUNNING=False
@@ -108,15 +116,23 @@ class Main:
             #SELECCION DE LAS PARTEEESSSS
             elif event.type==pygame.MOUSEBUTTONDOWN:
                 if base.hitbox.collidepoint(event.pos):
-                    texto_display(base.texto,FUENTE_DIALOGOS,NEGRO)
-                    SELECCIONADOS.append("BASE")
+                    if "BASE" in SELECCIONADOS:
+                        print("Ya has seleccionado este componente")
+                    else:
+                        SELECCIONADOS.append("BASE")
+                    texto_display(base.texto,NEGRO)
                 elif rueda.hitbox.collidepoint(event.pos):
-                    texto_display(rueda.texto,FUENTE_DIALOGOS,NEGRO)
-                    SELECCIONADOS.append("RUEDA")
+                    texto_display(rueda.texto,NEGRO)
+                    if "RUEDA" in SELECCIONADOS:
+                        print("Ya has seleccionado este componente")
+                    else:
+                        SELECCIONADOS.append("RUEDA")
+                    print(SELECCIONADOS)
                 elif camara.hitbox.collidepoint(event.pos):
-                    print("Es el texto display")
-                    texto_display(camara.texto,FUENTE_DIALOGOS,NEGRO)
-                    SELECCIONADOS.append("CÁMARA")
+                    if "CAMARA" in SELECCIONADOS:
+                        print("Ya has seleccionado este componente")
+                    else:
+                        SELECCIONADOS.append("CAMARA")
                 #elif termine.hitbox.collidepoint(event.pos):
                     #if len(SELECCIONADOS)>=3:
                         #texto_display("Has terminado de construir tu rover!",FUENTE_DIALOGOS,NEGRO)
@@ -138,6 +154,7 @@ class Main:
         elif tecla[pygame.K_DOWN] or tecla[pygame.K_s]:
             jugador.hitbox.move_ip(0,JUGADOR_VELOCIDAD)
 
+        #MOSTRA TODO EN LA PANTALIA
         pantalla.fill(BLANCO)
         pantalla.blit(fondo,fondo_rect)
         pantalla.blit(jugador.textura,jugador.hitbox)
@@ -145,6 +162,8 @@ class Main:
         pantalla.blit(base.textura,base.hitbox)
         pantalla.blit(rueda.textura,rueda.hitbox)
 
+
+        #reiniciooooo
         pygame.display.update()
         fps.tick(FPS)
 
